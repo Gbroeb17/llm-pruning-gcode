@@ -45,6 +45,7 @@ BASE_MODEL_DIR = "/home/cs_114522026/mywork/llm-compressor/granite3b-pruneme-ski
 # Adjust to your actual block range — check the folder name you got
 
 TRAIN_JSONL = "/home/cs_114522026/mywork/llm-compressor/final_full_dataset/training_data/dataset_no_rule/train.jsonl"
+VALID_JSONL = "   " #等輸入
 VALID_SPLIT_RATIO = 0.05   # 5% from train.jsonl as validation
 
 OUTPUT_DIR     = "qlora_runs/pruneme_heal_ep2_full"
@@ -129,8 +130,9 @@ model = get_peft_model(model, lora_config)
 model.print_trainable_parameters()
 
 
-# ============== load training data ==============
+# ============== load training data and valid data ==============
 print(f"\nLoading training data from {TRAIN_JSONL}")
+print(f"\nLoading training data from {VALID_JSONL}")
 
 def load_jsonl(path: str) -> list:
     rows = []
@@ -139,14 +141,15 @@ def load_jsonl(path: str) -> list:
             rows.append(json.loads(line))
     return rows
 
-all_rows = load_jsonl(TRAIN_JSONL)
-random.shuffle(all_rows)
-n_valid = int(len(all_rows) * VALID_SPLIT_RATIO)
-valid_rows = all_rows[:n_valid]
-train_rows = all_rows[n_valid:]
-print(f"  total: {len(all_rows)} samples")
-print(f"  train: {len(train_rows)} samples")
-print(f"  valid: {len(valid_rows)} samples (held out from train)")
+all_rows_train = load_jsonl(TRAIN_JSONL)
+all_rows_valid  = load_jsonl(VALID_JSONL)
+random.shuffle(all_rows_train)
+#n_valid = int(len(all_rows_train) * VALID_SPLIT_RATIO)
+#valid_rows = all_rows_train[:n_valid]
+#train_rows = all_rows_train[n_valid:]
+#print(f"  total: {len(all_rows_train)} samples")
+print(f"  train: {len(all_rows_train)} samples")
+print(f"  valid: {len(all_rows_valid)} samples (held out from train)")
 
 # Filter out samples that are too long after tokenization
 # (avoids wasting compute on samples that will be heavily truncated)
@@ -242,8 +245,8 @@ def build_dataset(rows: list) -> Dataset:
     return Dataset.from_list(examples)
 
 print("\nTokenizing train + valid...")
-train_dataset = build_dataset(train_rows)
-valid_dataset = build_dataset(valid_rows)
+train_dataset = build_dataset(all_rows_train)
+valid_dataset = build_dataset(all_rows_valid)
 print(f"  train tokenized: {len(train_dataset)}")
 print(f"  valid tokenized: {len(valid_dataset)}")
 

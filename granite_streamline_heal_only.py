@@ -44,7 +44,7 @@ class JsonlGCodeDataset(Dataset):
         jsonl_path,
         tokenizer,
         max_seq_len,
-        limit_samples=None,
+        limit_samples=None,   # 抽幾筆資料拿來訓練, none就是選全部資料
         min_seq_len=1024,
         short_threshold=3600,
         long_threshold=20000,
@@ -64,17 +64,11 @@ class JsonlGCodeDataset(Dataset):
                     continue
 
                 row = json.loads(line)
-                if "messages" in row:
-                    text = tokenizer.apply_chat_template(
-                        row["messages"],
-                        tokenize=False,
-                        add_generation_prompt=False,
-                    )
-                else:
-                    prompt = row.get("instruction") or row.get("prompt") or row.get("input") or ""
-                    answer = row.get("output") or row.get("response") or row.get("answer") or row.get("completion") or ""
-                    text = f"{prompt}\n{answer}"
-
+                text = tokenizer.apply_chat_template(
+                    row["messages"],
+                    tokenize=False,
+                    add_generation_prompt=False,
+                )
                 ids = tokenizer(text, add_special_tokens=False)["input_ids"]
                 raw.append({"input_ids": ids, "tok_len": len(ids)})
 

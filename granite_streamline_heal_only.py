@@ -22,7 +22,8 @@ After training, that healed layer replaces layer 17 in the pruned model.
 """
 
 '''
-training data的setup和pruneme一樣
+調參可能要改max_seq_len
+抽limit_sample筆資料訓練, 目前沒設不知道全部資料training會不會很久
 之後可以試試看和qlora結合
 '''
 

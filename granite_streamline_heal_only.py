@@ -22,7 +22,8 @@ After training, that healed layer replaces layer 17 in the pruned model.
 """
 
 '''
-之後要看每筆sample的token長度多少(seq_len)再想max_seq_len要怎麼抓(如果太長訓練的data可能要改成random chunck)
+training data的setup和pruneme一樣
+之後可以試試看和qlora結合
 '''
 
 import argparse
@@ -38,6 +39,7 @@ from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
+# ======== same as pruneme setup ====================
 class JsonlGCodeDataset(Dataset):
     def __init__(
         self,
@@ -103,6 +105,7 @@ class JsonlGCodeDataset(Dataset):
     def __len__(self):
         return len(self.samples)
 
+    # 每次長 sample 每次被取到時，會隨機選一段長度為max_seq_len的chunk長度來訓練
     def __getitem__(self, index):
         ids = self.samples[index]
         if len(ids) > self.max_seq_len:
@@ -153,19 +156,46 @@ def make_tokenizer(model_dir):
     tokenizer.padding_side = "right"
     return tokenizer
 
-
-@torch.no_grad()
-def teacher_hidden_pair(teacher, batch, replacement_layer_idx, removed_count):
-    teacher.eval()
-    out = teacher(**batch, output_hidden_states=True, use_cache=False)
+#
+#@torch.no_grad()
+#def teacher_hidden_pair(teacher, batch, replacement_layer_idx, removed_count):
+#    teacher.eval()
+#    out = teacher(**batch, output_hidden_states=True, use_cache=False)
 
     # hidden_states[0] is embedding output.
     # hidden_states[i] is input to decoder layer i.
     # hidden_states[i + 1] is output of decoder layer i.
-    x = out.hidden_states[replacement_layer_idx]
-    y = out.hidden_states[replacement_layer_idx + removed_count + 1]
-    return x.detach(), y.detach()
+#    x = out.hidden_states[replacement_layer_idx]
+#    y = out.hidden_states[replacement_layer_idx + removed_count + 1]
+#    return x.detach(), y.detach()
+#
 
+# 用forward hook只抓指定輸出層的hidden state
+@torch.no_grad()
+def teacher_hidden_pair(teacher, batch, replacement_layer_idx, removed_count):
+    layers = get_layers(teacher)
+    target_output_layer_idx = replacement_layer_idx + removed_count
+    cache = {}
+
+    def save_input(module, inputs):
+        cache["x"] = inputs[0].detach()
+
+    def save_output(module, inputs, output):
+        if isinstance(output, tuple):
+            output = output[0]
+        cache["y"] = output.detach()
+
+    # teacher forward 時，一進入 replace layer 前，就會自動執行 save_input()，存下 replace layer input
+    input_handle = layers[replacement_layer_idx].register_forward_pre_hook(save_input)
+    output_handle = layers[target_output_layer_idx].register_forward_hook(save_output)
+
+    teacher.eval()
+    teacher(**batch, use_cache=False)
+
+    input_handle.remove()
+    output_handle.remove()
+
+    return cache["x"], cache["y"]
 
 def run_layer(layer, hidden_states, attention_mask):
     seq_len = hidden_states.size(1)
@@ -297,7 +327,7 @@ def parse_args():
     parser.add_argument("--removed_start_layer", type=int, required=True)
     parser.add_argument("--removed_count", type=int, required=True)
 
-    parser.add_argument("--max_seq_len", type=int, default=2048)
+    parser.add_argument("--max_seq_len", type=int, default=2048)  # 每次真正丟進模型訓練的token長度上限
     parser.add_argument("--limit_samples", type=int, default=None)
     parser.add_argument("--min_seq_len", type=int, default=1024)
     parser.add_argument("--short_threshold", type=int, default=3600)

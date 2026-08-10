@@ -21,6 +21,10 @@ LLM-Streamline idea:
 After training, that healed layer replaces layer 17 in the pruned model.
 """
 
+'''
+之後要看每筆sample的token長度多少(seq_len)再想max_seq_len要怎麼抓(如果太長訓練的data可能要改成random chunck)
+'''
+
 import argparse
 import copy
 import json
@@ -35,8 +39,24 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 class JsonlGCodeDataset(Dataset):
-    def __init__(self, jsonl_path, tokenizer, max_seq_len, limit_samples=None):
+    def __init__(
+        self,
+        jsonl_path,
+        tokenizer,
+        max_seq_len,
+        limit_samples=None,
+        min_seq_len=1024,
+        short_threshold=3600,
+        long_threshold=20000,
+        short_ratio=0.5,
+        medium_ratio=0.3,
+        long_ratio=0.2,
+        seed=42,
+    ):
+        self.max_seq_len = max_seq_len
+        self.rng = random.Random(seed)
         self.samples = []
+        raw = []
 
         with open(jsonl_path, "r", encoding="utf-8") as f:
             for line in f:
@@ -55,24 +75,49 @@ class JsonlGCodeDataset(Dataset):
                     answer = row.get("output") or row.get("response") or row.get("answer") or row.get("completion") or ""
                     text = f"{prompt}\n{answer}"
 
-                ids = tokenizer(
-                    text,
-                    truncation=True,
-                    max_length=max_seq_len,
-                    add_special_tokens=False,
-                )["input_ids"]
+                ids = tokenizer(text, add_special_tokens=False)["input_ids"]
+                raw.append({"input_ids": ids, "tok_len": len(ids)})
 
-                if len(ids) > 8:
-                    self.samples.append(torch.tensor(ids, dtype=torch.long))
+        pool = [r for r in raw if r["tok_len"] >= min_seq_len]
+        short = [r for r in pool if r["tok_len"] < short_threshold]
+        medium = [r for r in pool if short_threshold <= r["tok_len"] < long_threshold]
+        long = [r for r in pool if r["tok_len"] >= long_threshold]
+        print(f"Tokenized raw samples: {len(raw)}")
+        print(f"Pool >= {min_seq_len} tokens: {len(pool)}")
+        print(f"Buckets short/medium/long: {len(short)}/{len(medium)}/{len(long)}")
 
-                if limit_samples and len(self.samples) >= limit_samples:
+        if limit_samples:
+            chosen = (
+                self._pick(short, int(limit_samples * short_ratio))
+                + self._pick(medium, int(limit_samples * medium_ratio))
+                + self._pick(long, int(limit_samples * long_ratio))
+            )
+
+            while len(chosen) < limit_samples:
+                chosen_ids = {id(r) for r in chosen}
+                leftover = [r for r in pool if id(r) not in chosen_ids]
+                if not leftover:
                     break
+                chosen.append(self.rng.choice(leftover))
+        else:
+            chosen = list(pool)
+
+        self.rng.shuffle(chosen)
+        self.samples = [r["input_ids"] for r in chosen[:limit_samples]]
+        print(f"Selected healing samples: {len(self.samples)}")
 
     def __len__(self):
         return len(self.samples)
 
     def __getitem__(self, index):
-        return self.samples[index]
+        ids = self.samples[index]
+        if len(ids) > self.max_seq_len:
+            start = self.rng.randint(0, len(ids) - self.max_seq_len)
+            ids = ids[start : start + self.max_seq_len]
+        return torch.tensor(ids, dtype=torch.long)
+
+    def _pick(self, bucket, n):
+        return self.rng.sample(bucket, min(n, len(bucket)))
 
 
 class PadCollator:
@@ -260,6 +305,12 @@ def parse_args():
 
     parser.add_argument("--max_seq_len", type=int, default=2048)
     parser.add_argument("--limit_samples", type=int, default=None)
+    parser.add_argument("--min_seq_len", type=int, default=1024)
+    parser.add_argument("--short_threshold", type=int, default=3600)
+    parser.add_argument("--long_threshold", type=int, default=20000)
+    parser.add_argument("--short_ratio", type=float, default=0.5)
+    parser.add_argument("--medium_ratio", type=float, default=0.3)
+    parser.add_argument("--long_ratio", type=float, default=0.2)
     parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--lr", type=float, default=1e-5)
@@ -286,7 +337,19 @@ def main():
     dtype = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}[args.dtype]
 
     tokenizer = make_tokenizer(args.original_model_dir)
-    dataset = JsonlGCodeDataset(args.train_jsonl, tokenizer, args.max_seq_len, args.limit_samples)
+    dataset = JsonlGCodeDataset(
+        args.train_jsonl,
+        tokenizer,
+        args.max_seq_len,
+        args.limit_samples,
+        min_seq_len=args.min_seq_len,
+        short_threshold=args.short_threshold,
+        long_threshold=args.long_threshold,
+        short_ratio=args.short_ratio,
+        medium_ratio=args.medium_ratio,
+        long_ratio=args.long_ratio,
+        seed=args.seed,
+    )
     dataloader = DataLoader(
         dataset,
         batch_size=args.batch_size,

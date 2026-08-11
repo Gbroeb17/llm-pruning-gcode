@@ -118,6 +118,7 @@ class JsonlGCodeDataset(Dataset):
         return self.rng.sample(bucket, min(n, len(bucket)))
 
 
+# 幫 DataLoader 把不同長度的 token 序列補齊成同一長度，並建立 attention_mask
 class PadCollator:
     def __init__(self, tokenizer):
         self.pad_id = tokenizer.pad_token_id
@@ -362,6 +363,8 @@ def main():
     dtype = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}[args.dtype]
 
     tokenizer = make_tokenizer(args.original_model_dir)
+
+    # ================ trainging data setup =======================
     dataset = JsonlGCodeDataset(
         args.train_jsonl,
         tokenizer,
@@ -382,6 +385,7 @@ def main():
         collate_fn=PadCollator(tokenizer),
     )
 
+    # ===================== loading teacher model and already-pruned model ===================================
     print(f"Loading original teacher model from: {args.original_model_dir}")
     teacher = AutoModelForCausalLM.from_pretrained(
         args.original_model_dir,
@@ -400,6 +404,7 @@ def main():
     ).to(device)
     pruned.config.use_cache = False
 
+    # ========================= train replaced layer =============================================
     original_layers = len(get_layers(teacher))
     pruned_layers = len(get_layers(pruned))
     expected_pruned_layers = original_layers - args.removed_count
@@ -431,6 +436,7 @@ def main():
         grad_accum=args.grad_accum,
     )
 
+    # ================================ merge trained replaced layer and pruned model =============================================
     save_healed_pruned_model(
         pruned=pruned,
         healed_layer=healed_layer,

@@ -9,10 +9,10 @@ import time
 from pathlib import Path
 
 
-MODEL_DIR = "granite3b-pruneme-healed-ep2"
-INFERENCE_INPUT_DIR = Path("inference_input")          # 1000 筆 DXF
-INFERENCE_OUTPUT_DIR = Path("ep2_full_inference_output")
-TIMING_CSV_PATH = Path("ep2_full_timing.csv")
+MODEL_DIR = "/workspace/llm-pruning-gcode/granite3b-pruneme-skip6-block18to23"
+INFERENCE_INPUT_DIR = Path("/workspace/test_data/inference_input")          # 1000 筆 DXF
+INFERENCE_OUTPUT_DIR = Path("/workspace/llm-pruning-gcode/pruneme_only_100_inference_output")
+TIMING_CSV_PATH = Path("/workspace/llm-pruning-gcode/pruneme_only_100_timing.csv")
 
 # vLLM 引擎設定
 GPU_MEM_UTIL = 0.90
@@ -52,7 +52,7 @@ def main() -> int:
     raw_output_dir = INFERENCE_OUTPUT_DIR / "raw_outputs"
     raw_output_dir.mkdir(parents=True, exist_ok=True)
 
-    dxf_files = sorted(INFERENCE_INPUT_DIR.glob("*.dxf"))
+    dxf_files = sorted(INFERENCE_INPUT_DIR.glob("*.dxf"))[:100]  # 調幾筆dxf測資
     if not dxf_files:
         print(f"找不到 DXF: {INFERENCE_INPUT_DIR}")
         return 1

@@ -12,7 +12,11 @@ from pathlib import Path
 from typing import Any
 
 import torch
-from peft import PeftModel
+#from peft import PeftModel                 # 未來用到qlora再回來看
+try:
+    from peft import PeftModel
+except ImportError:
+    PeftModel = None
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -31,7 +35,7 @@ INFERENCE_OUTPUT_DIR = PROJECT_ROOT / "ep2_output"
 INFERENCE_PATH_JSON_DIR = INFERENCE_OUTPUT_DIR / "path_json_no_rule"
 TIMING_CSV_PATH = PROJECT_ROOT / "ep2_timing.cvs"
 
-PARAMETERS_CSV_PATH = PROJECT_ROOT / "parameters_test.csv"
+PARAMETERS_CSV_PATH = Path("/workspace/test_data/parameters_test.csv") # 只要改這個其他vllm沒有import
 CSV_FILENAME_COL = "filename"
 CSV_LINE_DISTANCE_COL = "line_distance"
 CSV_LASER_POWER_COL = "laser_power_s"
@@ -252,6 +256,11 @@ def load_model_and_tokenizer(model_or_adapter_dir: Path):
             model = AutoModelForCausalLM.from_pretrained(str(model_or_adapter_dir), **common_kwargs)
 
     if (model_or_adapter_dir / "adapter_config.json").exists():
+        # if PeftModel is None:
+        #     raise ImportError(
+        #         "PEFT is required for adapter-based inference. "
+        #         "Please install peft before using this function."
+        #     )
         model = PeftModel.from_pretrained(model, str(model_or_adapter_dir))
         if hasattr(model, "merge_and_unload"):
             try:

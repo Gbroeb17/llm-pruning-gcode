@@ -31,6 +31,7 @@ import argparse
 import copy
 import json
 import random
+import time
 from pathlib import Path
 
 import torch
@@ -181,6 +182,53 @@ def teacher_hidden_pair(teacher, batch, replacement_layer_idx, removed_count):
 
     def save_input(module, inputs):
         cache["x"] = inputs[0].detach()
+    # =================== debugging ================================
+    # def save_input(module, args, kwargs):
+    #     cache["x"] = args[0].detach()
+
+    #     print("\n===== Teacher Layer Input Check =====")
+
+    #     print("kwargs keys:", kwargs.keys())
+
+    #     attention_mask = kwargs.get("attention_mask", None)
+
+    #     if attention_mask is None:
+    #         print("attention_mask: None")
+    #     else:
+    #         print("attention_mask shape:", attention_mask.shape)
+    #         print("attention_mask dtype:", attention_mask.dtype)
+    #         print("attention_mask min:", attention_mask.min().item())
+    #         print("attention_mask max:", attention_mask.max().item())
+
+    #     position_embeddings = kwargs.get("position_embeddings", None)
+
+    #     if position_embeddings is None:
+    #         print("position_embeddings: None")
+    #     else:
+    #         print("position_embeddings exists")
+    #         print("cos shape:", position_embeddings[0].shape)
+    #         print("sin shape:", position_embeddings[1].shape)
+
+    #     print("=====================================\n")
+
+    #     position_ids = kwargs.get("position_ids", None)
+
+    #     if position_ids is None:
+    #         print("position_ids: None")
+    #     else:
+    #         print("position_ids shape:", position_ids.shape)
+    #         print("position_ids first 10:", position_ids[0, :10])
+    #         print("position_ids last 10:", position_ids[0, -10:])
+
+
+    #     cache_position = kwargs.get("cache_position", None)
+
+    #     if cache_position is None:
+    #         print("cache_position: None")
+    #     else:
+    #         print("cache_position shape:", cache_position.shape)
+    #         print("cache_position first 10:", cache_position[:10])
+    #         print("cache_position last 10:", cache_position[-10:])
 
     def save_output(module, inputs, output):
         if isinstance(output, tuple):
@@ -189,6 +237,10 @@ def teacher_hidden_pair(teacher, batch, replacement_layer_idx, removed_count):
 
     # teacher forward 時，一進入 replace layer 前，就會自動執行 save_input()，存下 replace layer input
     input_handle = layers[replacement_layer_idx].register_forward_pre_hook(save_input)
+    # input_handle = layers[replacement_layer_idx].register_forward_pre_hook(
+    #     save_input,
+    #     with_kwargs=True,
+    # )
     output_handle = layers[target_output_layer_idx].register_forward_hook(save_output)
 
     teacher.eval()
@@ -199,21 +251,21 @@ def teacher_hidden_pair(teacher, batch, replacement_layer_idx, removed_count):
 
     return cache["x"], cache["y"]
 
-def run_layer(layer, hidden_states, attention_mask):
+def run_layer(model, layer, hidden_states, attention_mask):
     seq_len = hidden_states.size(1)
     position_ids = torch.arange(seq_len, device=hidden_states.device).unsqueeze(0).expand(hidden_states.size(0), -1)
-
-    try:
-        out = layer(
-            hidden_states=hidden_states,
-            attention_mask=None,
-            position_ids=position_ids,
-        )
-    except TypeError:
-        out = layer(
-            hidden_states=hidden_states,
-            position_ids=position_ids,
-        )
+ 
+    position_embeddings = model.model.rotary_emb(
+        hidden_states,
+        position_ids,
+    )
+    
+    out = layer(
+        hidden_states=hidden_states,
+        attention_mask=None,
+        position_ids=position_ids,
+        position_embeddings=position_embeddings,
+    )
 
     return out[0] if isinstance(out, tuple) else out
 
@@ -264,6 +316,8 @@ def train_streamline_replacement(
     best_state = copy.deepcopy(replacement.state_dict())
     optimizer_step = 0
 
+    epoch_history = []
+
     for epoch in range(epochs):
         total_loss = 0.0
         total_steps = 0
@@ -280,7 +334,7 @@ def train_streamline_replacement(
                     removed_count,
                 )
 
-            pred = run_layer(replacement, teacher_x, batch["attention_mask"])
+            pred = run_layer(pruned, replacement, teacher_x, batch["attention_mask"])
             mask = batch["attention_mask"].bool().unsqueeze(-1).expand_as(pred)
             loss = loss_fn(pred.float().masked_select(mask), teacher_y.float().masked_select(mask))
             loss = loss / grad_accum
@@ -300,12 +354,18 @@ def train_streamline_replacement(
         current_lr = scheduler.get_last_lr()[0]
         print(f"Epoch {epoch + 1}: train_mse={avg_loss:.6f}, lr={current_lr:.2e}")
 
+        epoch_history.append({
+            "epoch": epoch + 1,
+            "train_mse": avg_loss,
+            "lr": current_lr,
+        })
+
         if avg_loss < best_loss:
             best_loss = avg_loss
             best_state = copy.deepcopy(replacement.state_dict())
 
     replacement.load_state_dict(best_state)
-    return replacement.cpu()
+    return replacement.cpu(), epoch_history
 
 
 def save_healed_pruned_model(pruned, healed_layer, replacement_layer_idx, output_dir, tokenizer):
@@ -321,24 +381,30 @@ def save_healed_pruned_model(pruned, healed_layer, replacement_layer_idx, output
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--original_model_dir", required=True)
-    parser.add_argument("--pruned_model_dir", required=True)
-    parser.add_argument("--train_jsonl", required=True)
-    parser.add_argument("--output_dir", required=True)
 
-    parser.add_argument("--removed_start_layer", type=int, required=True)
-    parser.add_argument("--removed_count", type=int, required=True)
+    # ===== 路徑 =====
+    parser.add_argument("--original_model_dir", default="/workspace/models/granite_gcode_merged/granite_gcode_merged_best_new")
+    parser.add_argument("--pruned_model_dir", default="/workspace/llm-pruning-gcode/granite3b-pruneme-skip6-block18to23")
+    parser.add_argument("--train_jsonl", default="/workspace/training_data/dataset_no_rule/train.jsonl")
+    parser.add_argument("--output_dir", default="/workspace/llm-pruning-gcode/granite3b-streamline-full-ep3-seqlen4096")
 
-    parser.add_argument("--max_seq_len", type=int, default=2048)  # 每次真正丟進模型訓練的token長度上限
-    parser.add_argument("--limit_samples", type=int, default=None)
+    # ===== PruneMe 剪枝結果 =====
+    parser.add_argument("--removed_start_layer", type=int, default=18)
+    parser.add_argument("--removed_count", type=int, default=6)
+
+    # ===== Dataset =====
+    parser.add_argument("--max_seq_len", type=int, default=4096)  # 每次真正丟進模型訓練的token長度上限
+    parser.add_argument("--limit_samples", type=int, default=None) # 訓練多少資料 全部的話設None
     parser.add_argument("--min_seq_len", type=int, default=1024)
     parser.add_argument("--short_threshold", type=int, default=3600)
     parser.add_argument("--long_threshold", type=int, default=20000)
     parser.add_argument("--short_ratio", type=float, default=0.5)
     parser.add_argument("--medium_ratio", type=float, default=0.3)
     parser.add_argument("--long_ratio", type=float, default=0.2)
+
+    # ===== Training =====
     parser.add_argument("--batch_size", type=int, default=1)
-    parser.add_argument("--epochs", type=int, default=3)
+    parser.add_argument("--epochs", type=int, default=3) # 調
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--min_lr", type=float, default=1e-6)
     parser.add_argument("--warmup_ratio", type=float, default=0.01)
@@ -355,6 +421,11 @@ def main():
     random.seed(args.seed)
     torch.manual_seed(args.seed)
 
+    start_time = time.time()
+
+    if torch.cuda.is_available():
+        torch.cuda.reset_peak_memory_stats()
+
     if args.removed_start_layer <= 0:
         raise ValueError("removed_start_layer must be >= 1 because the previous layer is used as replacement.")
 
@@ -362,9 +433,11 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     dtype = {"bf16": torch.bfloat16, "fp16": torch.float16, "fp32": torch.float32}[args.dtype]
 
+    print("\n========== Preparing tokenizer ==========")
     tokenizer = make_tokenizer(args.original_model_dir)
 
     # ================ trainging data setup =======================
+    print("\n========== Preparing training dataset ==========")
     dataset = JsonlGCodeDataset(
         args.train_jsonl,
         tokenizer,
@@ -420,7 +493,7 @@ def main():
             "Continue only if your pruned checkpoint has extra architecture changes."
         )
 
-    healed_layer = train_streamline_replacement(
+    healed_layer, epoch_history = train_streamline_replacement(
         teacher=teacher,
         pruned=pruned,
         dataloader=dataloader,
@@ -446,6 +519,65 @@ def main():
     )
 
     print(f"Saved Streamline-healed pruned Granite model to: {args.output_dir}")
+
+    # ============= save training parameter data ===================================
+    end_time = time.time()
+    training_time = end_time - start_time
+
+    if torch.cuda.is_available():
+        peak_gpu_memory = torch.cuda.max_memory_allocated() / (1024 ** 3)
+        gpu_total_memory = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
+    else:
+        peak_gpu_memory = None
+        gpu_total_memory = None
+
+    log = {
+        "original_model_dir": args.original_model_dir,
+        "pruned_model_dir": args.pruned_model_dir,
+        "train_jsonl": args.train_jsonl,
+        "output_dir": args.output_dir,
+
+        "removed_start_layer": args.removed_start_layer,
+        "removed_count": args.removed_count,
+
+        "max_seq_len": args.max_seq_len,
+        "limit_samples": args.limit_samples,
+        "min_seq_len": args.min_seq_len,
+
+        "batch_size": args.batch_size,
+        "epochs": args.epochs,
+        "lr": args.lr,
+        "min_lr": args.min_lr,
+        "warmup_ratio": args.warmup_ratio,
+        "cosine_training_ratio": args.cosine_training_ratio,
+        "weight_decay": args.weight_decay,
+        "grad_accum": args.grad_accum,
+        "dtype": args.dtype,
+        "seed": args.seed,
+
+        "epoch_history": epoch_history,
+
+        "training_time_seconds": training_time,
+        "training_time_minutes": training_time / 60,
+
+        "peak_gpu_memory_gb": peak_gpu_memory,
+        "gpu_total_memory_gb": gpu_total_memory,
+    }
+
+    log_path = Path(args.output_dir) / "streamline_training_log.json"
+
+    with open(log_path, "w", encoding="utf-8") as f:
+        json.dump(log, f, indent=2)
+
+    print(f"Training time: {training_time / 60:.2f} minutes")
+
+    if peak_gpu_memory is not None:
+        print(
+            f"Peak GPU memory: {peak_gpu_memory:.2f} GB "
+            f"/ {gpu_total_memory:.2f} GB"
+        )
+
+    print(f"Training log saved to: {log_path}")
 
 
 if __name__ == "__main__":

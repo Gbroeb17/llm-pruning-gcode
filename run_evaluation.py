@@ -38,12 +38,12 @@ from evaluator import evaluate_all
 from overlay_dxf_gcode import run_overlay_batch
 
 
-DEFAULT_DXF_DIR = PROJECT_DIR / "inference_input"
-DEFAULT_GCODE_DIR = PROJECT_DIR / "ep2_full_inference_output"
-DEFAULT_PARAM_CSV = PROJECT_DIR / "parameters_test.csv"
-DEFAULT_TIMING_CSV = PROJECT_DIR / "ep2_full_timing.csv"
-DEFAULT_OUTPUT_DIR = PROJECT_DIR / "Ep2_eval"
-DEFAULT_OVERLAY_DIRNAME = "ep2_overlay_png"
+DEFAULT_DXF_DIR = Path("/workspace/test_data/inference_input")
+DEFAULT_GCODE_DIR = Path("/workspace/llm-pruning-gcode/pruneme_only_100_inference_output")
+DEFAULT_PARAM_CSV = Path("/workspace/test_data/parameters_test.csv")
+DEFAULT_TIMING_CSV = Path("/workspace/llm-pruning-gcode/pruneme_only_100_timing.csv")
+DEFAULT_OUTPUT_DIR = Path("/workspace/llm-pruning-gcode/pruneme_only_100_eval")
+DEFAULT_OVERLAY_DIRNAME = "pruneme_only_100_overlay_png"
 DEFAULT_TOL_MM = 0.005
 DEFAULT_CLOSE_TOL_MM = 1e-4
 DEFAULT_FLATTEN_DISTANCE = 0.01

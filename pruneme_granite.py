@@ -49,8 +49,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 # ============== config ==============
-MODEL_ID  = "/home/cs_114522026/mywork/llm-compressor/final_granite_merged"
-DATA_PATH = "/home/cs_114522026/mywork/llm-compressor/final_full_dataset/training_data/dataset_no_rule/train.jsonl"
+MODEL_ID  = "/workspace/models/granite_gcode_merged/granite_gcode_merged_best_new"
+DATA_PATH = "/workspace/training_data/dataset_no_rule/train.jsonl"
 
 NUM_CALIBRATION_SAMPLES = 128
 MAX_SEQ_LENGTH          = 65536

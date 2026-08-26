@@ -386,14 +386,14 @@ def parse_args():
     parser.add_argument("--original_model_dir", default="/workspace/models/granite_gcode_merged/granite_gcode_merged_best_new")
     parser.add_argument("--pruned_model_dir", default="/workspace/llm-pruning-gcode/granite3b-pruneme-skip6-block18to23")
     parser.add_argument("--train_jsonl", default="/workspace/training_data/dataset_no_rule/train.jsonl")
-    parser.add_argument("--output_dir", default="/workspace/llm-pruning-gcode/granite3b-streamline-full-ep3-seqlen4096")
+    parser.add_argument("--output_dir", default="/workspace/llm-pruning-gcode/granite3b-streamline-full-ep3-seqlen8192-cosine1.0")
 
     # ===== PruneMe 剪枝結果 =====
     parser.add_argument("--removed_start_layer", type=int, default=18)
     parser.add_argument("--removed_count", type=int, default=6)
 
     # ===== Dataset =====
-    parser.add_argument("--max_seq_len", type=int, default=4096)  # 每次真正丟進模型訓練的token長度上限
+    parser.add_argument("--max_seq_len", type=int, default=8192)  # 每次真正丟進模型訓練的token長度上限
     parser.add_argument("--limit_samples", type=int, default=None) # 訓練多少資料 全部的話設None
     parser.add_argument("--min_seq_len", type=int, default=1024)
     parser.add_argument("--short_threshold", type=int, default=3600)
@@ -407,8 +407,8 @@ def parse_args():
     parser.add_argument("--epochs", type=int, default=3) # 調
     parser.add_argument("--lr", type=float, default=1e-5)
     parser.add_argument("--min_lr", type=float, default=1e-6)
-    parser.add_argument("--warmup_ratio", type=float, default=0.01)
-    parser.add_argument("--cosine_training_ratio", type=float, default=0.5)
+    parser.add_argument("--warmup_ratio", type=float, default=0.01) 
+    parser.add_argument("--cosine_training_ratio", type=float, default=1.0) # 調
     parser.add_argument("--weight_decay", type=float, default=0.01)
     parser.add_argument("--grad_accum", type=int, default=4)
     parser.add_argument("--dtype", choices=["bf16", "fp16", "fp32"], default="bf16")

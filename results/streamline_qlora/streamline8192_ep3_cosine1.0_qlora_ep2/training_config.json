@@ -1,0 +1,23 @@
+{
+  "base_model": "granite3b-streamline-full-ep3-seqlen8192-cosine1.0",
+  "streamline_max_seq_len": 8192,
+  "streamline_epochs": 3,
+  "streamline_cosine_training_ratio": 1.0,
+
+  "qlora_max_seq_length": 12288,
+  "lora_rank": 16,
+  "lora_alpha": 32,
+  "lora_dropout": 0.05,
+  "learning_rate": 0.0001,
+  "epochs": 2,
+  "batch_size": 1,
+  "gradient_accumulation": 8,
+  "warmup_ratio": 0.03,
+  "lr_scheduler": "cosine",
+  "eval_steps": 200,
+  "save_steps": 100,
+
+  "train_loss": 0.00025434029042502684,
+  "training_time_seconds": 41606.8229,
+  "training_time_hours": 11.5575
+}

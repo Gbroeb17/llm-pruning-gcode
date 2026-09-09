@@ -1,0 +1,14 @@
+{
+  "base_model_dir": "/workspace/llm-pruning-gcode/granite3b-streamline-full-ep3-seqlen8192-cosine1.0",
+  "output_dir": "/workspace/llm-pruning-gcode/qlora_runs/streamline8192_cosine1.0_qlora_ep0.5",
+  "merged_save_dir": "/workspace/llm-pruning-gcode/granite3b-pruneme-streamline8192-cosine1.0-qlora-ep0.5",
+  "use_qlora": true,
+  "max_seq_length": 12288,
+  "batch_size": 1,
+  "grad_accum": 8,
+  "num_epochs": 0.5,
+  "training_time_seconds": 9638.511422872543,
+  "training_time_minutes": 160.64185704787573,
+  "peak_gpu_memory_gb": 48.37162923812866,
+  "gpu_total_memory_gb": 79.250732421875
+}

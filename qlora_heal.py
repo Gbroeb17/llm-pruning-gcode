@@ -24,6 +24,7 @@ Run:
 import json
 import os
 import random
+import time
 from pathlib import Path
 
 import torch
@@ -41,15 +42,15 @@ from transformers import (
 
 # ============== config ==============
 # Path to pruned model produced by pruneme_granite.py
-BASE_MODEL_DIR = "/workspace/llm-pruning-gcode/granite3b-streamline-full-ep3-seqlen8192-cosine1.0"
+BASE_MODEL_DIR = "/workspace/llm-pruning-gcode/granite3b-pruneme-skip6-block18to23"
 # Adjust to your actual block range — check the folder name you got
 
 TRAIN_JSONL = "/workspace/training_data/dataset_no_rule/train.jsonl"
 VALID_JSONL = "/workspace/training_data/dataset_no_rule/valid.jsonl" 
 #VALID_SPLIT_RATIO = 0.05   # 5% from train.jsonl as validation
 
-OUTPUT_DIR     = "/workspace/llm-pruning-gcode/qlora_runs/streamline8192_cosine1.0_qlora_ep2"
-MERGED_SAVE_DIR = "/workspace/llm-pruning-gcode/granite3b-pruneme-streamline8192-cosine1.0-qlora-ep2"
+OUTPUT_DIR     = "/workspace/llm-pruning-gcode/qlora_runs/pruneme-skip6-qlora-ep0.25"
+MERGED_SAVE_DIR = "/workspace/llm-pruning-gcode/granite3b-pruneme-skip6-qlora-ep0.25"
 
 # Training hyperparameters (sensible defaults, adjust as needed)
 MAX_SEQ_LENGTH      = 12288
@@ -57,7 +58,7 @@ LORA_RANK           = 16
 LORA_ALPHA          = 32
 LORA_DROPOUT        = 0.05
 LEARNING_RATE       = 1e-4
-NUM_EPOCHS          = 2.0
+NUM_EPOCHS          = 0.25      # test
 BATCH_SIZE          = 1
 GRAD_ACCUM          = 8        # effective batch size = 8
 WARMUP_RATIO        = 0.03
@@ -68,6 +69,11 @@ SAVE_STEPS          = 100
 SEED = 42
 random.seed(SEED)
 torch.manual_seed(SEED)
+
+# Measure the whole QLoRA workflow, including loading, training, and merge.
+start_time = time.time()
+if torch.cuda.is_available():
+    torch.cuda.reset_peak_memory_stats()
 
 
 # ============== load tokenizer ==============
@@ -352,6 +358,37 @@ Path(MERGED_SAVE_DIR).mkdir(parents=True, exist_ok=True)
 merged_model.save_pretrained(MERGED_SAVE_DIR, safe_serialization=True)
 tokenizer.save_pretrained(MERGED_SAVE_DIR)
 
+# Whole-process runtime and peak GPU memory (same measurement style as Streamline).
+end_time = time.time()
+training_time = end_time - start_time
+
+if torch.cuda.is_available():
+    torch.cuda.synchronize()
+    peak_gpu_memory = torch.cuda.max_memory_allocated() / (1024 ** 3)
+    gpu_total_memory = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
+else:
+    peak_gpu_memory = None
+    gpu_total_memory = None
+
+memory_log = {
+    "base_model_dir": BASE_MODEL_DIR,
+    "output_dir": OUTPUT_DIR,
+    "merged_save_dir": MERGED_SAVE_DIR,
+    "use_qlora": USE_QLORA,
+    "max_seq_length": MAX_SEQ_LENGTH,
+    "batch_size": BATCH_SIZE,
+    "grad_accum": GRAD_ACCUM,
+    "num_epochs": NUM_EPOCHS,
+    "training_time_seconds": training_time,
+    "training_time_minutes": training_time / 60,
+    "peak_gpu_memory_gb": peak_gpu_memory,
+    "gpu_total_memory_gb": gpu_total_memory,
+}
+
+memory_log_path = Path(MERGED_SAVE_DIR) / "qlora_training_log.json"
+with open(memory_log_path, "w", encoding="utf-8") as f:
+    json.dump(memory_log, f, indent=2)
+
 # Final size
 total_bytes = sum(
     os.path.getsize(os.path.join(MERGED_SAVE_DIR, f))
@@ -360,6 +397,10 @@ total_bytes = sum(
 )
 print(f"\n✓ Healed model saved: {MERGED_SAVE_DIR}/")
 print(f"  Size: {total_bytes / 1e9:.2f} GB")
+if peak_gpu_memory is not None:
+    print(f"  Peak GPU memory: {peak_gpu_memory:.2f} GB / {gpu_total_memory:.2f} GB")
+print(f"  Total runtime: {training_time / 60:.2f} minutes")
+print(f"  Training log: {memory_log_path}")
 print(f"\nFor inference, point your inference script to:")
 print(f"  MODEL_OR_ADAPTER_DIR = '{MERGED_SAVE_DIR}'")
 print("Done.")

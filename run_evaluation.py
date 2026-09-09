@@ -39,11 +39,11 @@ from overlay_dxf_gcode import run_overlay_batch
 
 
 DEFAULT_DXF_DIR = Path("/workspace/test_data/inference_input")
-DEFAULT_GCODE_DIR = Path("/workspace/llm-pruning-gcode/streamline8192_ep3_cosine1.0_qlora_ep2_inference_output")
+DEFAULT_GCODE_DIR = Path("/workspace/llm-pruning-gcode/pruneme-skip6-qlora-ep0.25-inference-output")
 DEFAULT_PARAM_CSV = Path("/workspace/test_data/parameters_test.csv")
-DEFAULT_TIMING_CSV = Path("/workspace/llm-pruning-gcode/streamline8192_ep3_cosine1.0_qlora_ep2_timing.csv")
-DEFAULT_OUTPUT_DIR = Path("/workspace/llm-pruning-gcode/streamline8192_ep3_cosine1.0_qlora_ep2_eval")
-DEFAULT_OVERLAY_DIRNAME = "streamline8192_ep3_cosine1.0_qlora_ep2_overlay_png"
+DEFAULT_TIMING_CSV = Path("/workspace/llm-pruning-gcode/pruneme-skip6-qlora-ep0.25-timing.csv")
+DEFAULT_OUTPUT_DIR = Path("/workspace/llm-pruning-gcode/pruneme-skip6-qlora-ep0.25-eval")
+DEFAULT_OVERLAY_DIRNAME = "pruneme-skip6-qlora-ep0.25-overlay-png"
 DEFAULT_TOL_MM = 0.005
 DEFAULT_CLOSE_TOL_MM = 1e-4
 DEFAULT_FLATTEN_DISTANCE = 0.01

@@ -1,0 +1,23 @@
+{
+  "num_pairs": 1000,
+  "num_success": 1000,
+  "num_failures": 0,
+  "failures": [],
+  "stats": {
+    "iou": {
+      "mean": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "inference_time": {
+      "mean": 9.938385000000043,
+      "min": 9.938385,
+      "max": 9.938385
+    },
+    "first_token_latency": {
+      "mean": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "num_pairs": 1000,
+  "num_success": 1000,
+  "num_failures": 0,
+  "failures": [],
+  "stats": {
+    "iou": {
+      "mean": 0.9998445672564511,
+      "min": 0.9937527911911568,
+      "max": 0.9999999999999932
+    },
+    "group_syntax_success_rate": {
+      "mean": 1.0,
+      "min": 1.0,
+      "max": 1.0
+    },
+    "coordinate_mae": {
+      "mean": 6.543295880719386e-06,
+      "min": 0.0,
+      "max": 0.0007590953253532207
+    },
+    "mae_s": {
+      "mean": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "mae_q": {
+      "mean": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "mae_f": {
+      "mean": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "inference_time": {
+      "mean": 12.010652000000233,
+      "min": 12.010652,
+      "max": 12.010652
+    },
+    "first_token_latency": {
+      "mean": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    }
+  }
+}

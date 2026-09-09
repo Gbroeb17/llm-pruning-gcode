@@ -50,3 +50,7 @@ raw_outputs/
 !README.md
 !.gitignore
 !requirements.txt
+
+# 實驗結果需要版本控制（模型權重不在 results/ 內）
+!results/
+!results/**

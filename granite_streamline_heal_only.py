@@ -384,13 +384,13 @@ def parse_args():
 
     # ===== 路徑 =====
     parser.add_argument("--original_model_dir", default="/workspace/models/granite_gcode_merged/granite_gcode_merged_best_new")
-    parser.add_argument("--pruned_model_dir", default="/workspace/llm-pruning-gcode/granite3b-pruneme-skip6-block18to23")
+    parser.add_argument("--pruned_model_dir", default="/workspace/llm-pruning-gcode/granite3b-pruneme-skip10-block17to26")
     parser.add_argument("--train_jsonl", default="/workspace/training_data/dataset_no_rule/train.jsonl")
-    parser.add_argument("--output_dir", default="/workspace/llm-pruning-gcode/granite3b-streamline-full-ep3-seqlen8192-cosine1.0")
+    parser.add_argument("--output_dir", default="/workspace/llm-pruning-gcode/granite3b-streamline-skip10-block17to26")
 
     # ===== PruneMe 剪枝結果 =====
-    parser.add_argument("--removed_start_layer", type=int, default=18)
-    parser.add_argument("--removed_count", type=int, default=6)
+    parser.add_argument("--removed_start_layer", type=int, default=17)
+    parser.add_argument("--removed_count", type=int, default=10)
 
     # ===== Dataset =====
     parser.add_argument("--max_seq_len", type=int, default=8192)  # 每次真正丟進模型訓練的token長度上限

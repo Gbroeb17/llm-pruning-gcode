@@ -1,0 +1,42 @@
+{
+  "original_model_dir": "/workspace/models/granite_gcode_merged/granite_gcode_merged_best_new",
+  "pruned_model_dir": "/workspace/llm-pruning-gcode/granite3b-pruneme-skip6-block18to23",
+  "train_jsonl": "/workspace/training_data/dataset_no_rule/train.jsonl",
+  "output_dir": "/workspace/llm-pruning-gcode/granite3b-streamline-full-ep3-seqlen8192",
+  "removed_start_layer": 18,
+  "removed_count": 6,
+  "max_seq_len": 8192,
+  "limit_samples": null,
+  "min_seq_len": 1024,
+  "batch_size": 1,
+  "epochs": 3,
+  "lr": 1e-05,
+  "min_lr": 1e-06,
+  "warmup_ratio": 0.01,
+  "cosine_training_ratio": 0.5,
+  "weight_decay": 0.01,
+  "grad_accum": 4,
+  "dtype": "bf16",
+  "seed": 42,
+  "epoch_history": [
+    {
+      "epoch": 1,
+      "train_mse": 3.241023683245882,
+      "lr": 3.2923147976398474e-06
+    },
+    {
+      "epoch": 2,
+      "train_mse": 2.7009764954313455,
+      "lr": 1e-06
+    },
+    {
+      "epoch": 3,
+      "train_mse": 2.7013377731018937,
+      "lr": 1e-06
+    }
+  ],
+  "training_time_seconds": 5383.002207040787,
+  "training_time_minutes": 89.71670345067977,
+  "peak_gpu_memory_gb": 14.950189113616943,
+  "gpu_total_memory_gb": 79.250732421875
+}

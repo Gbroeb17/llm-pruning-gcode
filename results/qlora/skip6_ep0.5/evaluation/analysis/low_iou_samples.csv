@@ -1,0 +1,3 @@
+filename,iou,group_syntax_success_rate,coordinate_mae,mae_s,mae_q,mae_f,inference_time,first_token_latency,iou_range
+test116.gcode,0.0,,,,,,11.95335,0.0,<0.1
+test32.gcode,0.0,,,,,,11.95335,0.0,<0.1

@@ -1,0 +1,14 @@
+{
+  "base_model_dir": "/workspace/llm-pruning-gcode/granite3b-streamline-ep2-skip6-block18to23",
+  "output_dir": "/workspace/llm-pruning-gcode/qlora_runs/streamline-ep2-skip6-qlora-ep0.25",
+  "merged_save_dir": "/workspace/llm-pruning-gcode/granite3b-streamline-ep2-skip6-qlora-ep0.25",
+  "use_qlora": true,
+  "max_seq_length": 12288,
+  "batch_size": 1,
+  "grad_accum": 8,
+  "num_epochs": 0.25,
+  "training_time_seconds": 4077.133342027664,
+  "training_time_minutes": 67.95222236712773,
+  "peak_gpu_memory_gb": 48.37138605117798,
+  "gpu_total_memory_gb": 79.250732421875
+}

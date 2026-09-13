@@ -1,0 +1,24 @@
+{
+  "base_model": "/workspace/llm-pruning-gcode/granite3b-pruneme-skip6-block18to23",
+  "validation_jsonl": "/workspace/training_data/dataset_no_rule/valid.jsonl",
+  "max_seq_length": 12288,
+  "num_validation_samples": 3247,
+  "best_checkpoint": "/workspace/llm-pruning-gcode/qlora_runs/pruneme-skip6-qlora-ep0.25/checkpoint-352",
+  "best_eval_loss": 9.14279280550545e-06,
+  "results": [
+    {
+      "checkpoint": "/workspace/llm-pruning-gcode/qlora_runs/pruneme-skip6-qlora-ep0.25/checkpoint-352",
+      "step": 352,
+      "eval_loss": 9.14279280550545e-06,
+      "eval_runtime": 714.889,
+      "eval_samples_per_second": 4.542
+    },
+    {
+      "checkpoint": "/workspace/llm-pruning-gcode/qlora_runs/pruneme-skip6-qlora-ep0.25/checkpoint-300",
+      "step": 300,
+      "eval_loss": 9.249719369108789e-06,
+      "eval_runtime": 715.525,
+      "eval_samples_per_second": 4.538
+    }
+  ]
+}

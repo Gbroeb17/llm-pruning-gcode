@@ -1,0 +1,51 @@
+nohup: ignoring input
+The following generation flags are not valid and may be ignored: ['output_hidden_states']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Loading model from /home/aichen/project_data/model/granite_gcode_merged_best_new
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:  50%|█████     | 1/2 [00:31<00:31, 31.39s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:44<00:00, 20.83s/it]Loading checkpoint shards: 100%|██████████| 2/2 [00:44<00:00, 22.42s/it]
+Model: 32 layers, hidden=2560
+Plan: find best block of 12 consecutive layers to remove
+
+Building calibration data...
+Pool: 11207, buckets: 8387/2808/12
+Selected 128 calibration samples
+
+=== Computing angular distances (block size = 12) ===
+Calibration:   0%|          | 0/128 [00:00<?, ?it/s]Calibration:   1%|          | 1/128 [00:01<02:53,  1.36s/it]Calibration:   2%|▏         | 2/128 [00:01<01:48,  1.16it/s]Calibration:   2%|▏         | 3/128 [00:02<01:21,  1.54it/s]Calibration:   3%|▎         | 4/128 [00:02<01:07,  1.84it/s]Calibration:   4%|▍         | 5/128 [00:03<00:58,  2.09it/s]Calibration:   5%|▍         | 6/128 [00:03<01:18,  1.55it/s]Calibration:   5%|▌         | 7/128 [00:04<01:09,  1.75it/s]Calibration:   6%|▋         | 8/128 [00:04<01:02,  1.91it/s]Calibration:   7%|▋         | 9/128 [00:05<00:58,  2.04it/s]Calibration:   8%|▊         | 10/128 [00:05<00:53,  2.21it/s]Calibration:   9%|▊         | 11/128 [00:06<01:04,  1.82it/s]Calibration:   9%|▉         | 12/128 [00:06<01:04,  1.81it/s]Calibration:  10%|█         | 13/128 [00:07<00:58,  1.98it/s]Calibration:  11%|█         | 14/128 [00:07<00:56,  2.01it/s]Calibration:  12%|█▏        | 15/128 [00:17<05:56,  3.15s/it]Calibration:  12%|█▎        | 16/128 [00:29<11:16,  6.04s/it]Calibration:  13%|█▎        | 17/128 [00:30<08:15,  4.46s/it]Calibration:  14%|█▍        | 18/128 [00:31<05:59,  3.27s/it]Calibration:  15%|█▍        | 19/128 [00:31<04:24,  2.43s/it]Calibration:  16%|█▌        | 20/128 [00:31<03:15,  1.81s/it]Calibration:  16%|█▋        | 21/128 [00:35<04:19,  2.42s/it]Calibration:  17%|█▋        | 22/128 [00:36<03:17,  1.86s/it]Calibration:  18%|█▊        | 23/128 [00:36<02:34,  1.47s/it]Calibration:  19%|█▉        | 24/128 [00:37<02:00,  1.16s/it]Calibration:  20%|█▉        | 25/128 [00:37<01:42,  1.00it/s]Calibration:  20%|██        | 26/128 [00:38<01:32,  1.11it/s]Calibration:  21%|██        | 27/128 [00:39<01:19,  1.28it/s]Calibration:  22%|██▏       | 28/128 [00:40<01:33,  1.07it/s]Calibration:  23%|██▎       | 29/128 [00:41<01:26,  1.15it/s]Calibration:  23%|██▎       | 30/128 [00:46<03:25,  2.10s/it]Calibration:  24%|██▍       | 31/128 [00:46<02:35,  1.60s/it]Calibration:  25%|██▌       | 32/128 [00:46<01:58,  1.23s/it]Calibration:  26%|██▌       | 33/128 [00:47<01:29,  1.06it/s]Calibration:  27%|██▋       | 34/128 [00:48<01:33,  1.01it/s]Calibration:  27%|██▋       | 35/128 [00:48<01:16,  1.22it/s]Calibration:  28%|██▊       | 36/128 [00:49<01:15,  1.21it/s]Calibration:  29%|██▉       | 37/128 [00:50<01:07,  1.35it/s]Calibration:  30%|██▉       | 38/128 [00:50<01:05,  1.36it/s]Calibration:  30%|███       | 39/128 [00:51<00:55,  1.60it/s]Calibration:  31%|███▏      | 40/128 [00:51<00:57,  1.52it/s]Calibration:  32%|███▏      | 41/128 [00:52<00:53,  1.64it/s]Calibration:  33%|███▎      | 42/128 [00:52<00:47,  1.81it/s]Calibration:  34%|███▎      | 43/128 [00:57<02:37,  1.85s/it]Calibration:  34%|███▍      | 44/128 [00:58<02:02,  1.46s/it]Calibration:  35%|███▌      | 45/128 [00:59<01:42,  1.24s/it]Calibration:  36%|███▌      | 46/128 [00:59<01:27,  1.07s/it]Calibration:  37%|███▋      | 47/128 [01:00<01:19,  1.02it/s]Calibration:  38%|███▊      | 48/128 [01:01<01:07,  1.19it/s]Calibration:  38%|███▊      | 49/128 [01:01<01:09,  1.14it/s]Calibration:  39%|███▉      | 50/128 [01:02<00:56,  1.37it/s]Calibration:  40%|███▉      | 51/128 [01:02<00:49,  1.56it/s]Calibration:  41%|████      | 52/128 [01:03<00:46,  1.64it/s]Calibration:  41%|████▏     | 53/128 [01:03<00:44,  1.67it/s]Calibration:  42%|████▏     | 54/128 [01:04<00:44,  1.66it/s]Calibration:  43%|████▎     | 55/128 [01:05<00:44,  1.65it/s]Calibration:  44%|████▍     | 56/128 [01:05<00:46,  1.54it/s]Calibration:  45%|████▍     | 57/128 [01:06<00:47,  1.49it/s]Calibration:  45%|████▌     | 58/128 [01:07<00:42,  1.64it/s]Calibration:  46%|████▌     | 59/128 [01:07<00:41,  1.67it/s]Calibration:  47%|████▋     | 60/128 [01:07<00:35,  1.93it/s]Calibration:  48%|████▊     | 61/128 [01:17<03:26,  3.09s/it]Calibration:  48%|████▊     | 62/128 [01:17<02:31,  2.30s/it]Calibration:  49%|████▉     | 63/128 [01:18<02:09,  1.99s/it]Calibration:  50%|█████     | 64/128 [01:19<01:35,  1.49s/it]Calibration:  51%|█████     | 65/128 [01:19<01:15,  1.20s/it]Calibration:  52%|█████▏    | 66/128 [01:20<01:01,  1.01it/s]Calibration:  52%|█████▏    | 67/128 [01:20<00:56,  1.08it/s]Calibration:  53%|█████▎    | 68/128 [01:21<00:45,  1.32it/s]Calibration:  54%|█████▍    | 69/128 [01:27<02:25,  2.46s/it]Calibration:  55%|█████▍    | 70/128 [01:28<01:47,  1.85s/it]Calibration:  55%|█████▌    | 71/128 [01:29<01:32,  1.62s/it]Calibration:  56%|█████▋    | 72/128 [01:33<02:24,  2.58s/it]Calibration:  57%|█████▋    | 73/128 [01:34<01:51,  2.04s/it]Calibration:  58%|█████▊    | 74/128 [01:35<01:25,  1.58s/it]Calibration:  59%|█████▊    | 75/128 [01:35<01:05,  1.24s/it]Calibration:  59%|█████▉    | 76/128 [01:37<01:05,  1.26s/it]Calibration:  60%|██████    | 77/128 [01:37<00:56,  1.10s/it]Calibration:  61%|██████    | 78/128 [01:38<00:44,  1.13it/s]Calibration:  62%|██████▏   | 79/128 [01:38<00:41,  1.19it/s]Calibration:  62%|██████▎   | 80/128 [01:39<00:35,  1.34it/s]Calibration:  63%|██████▎   | 81/128 [01:44<01:41,  2.15s/it]Calibration:  64%|██████▍   | 82/128 [01:45<01:14,  1.62s/it]Calibration:  65%|██████▍   | 83/128 [01:46<01:08,  1.53s/it]Calibration:  66%|██████▌   | 84/128 [01:47<00:54,  1.24s/it]Calibration:  66%|██████▋   | 85/128 [01:48<00:49,  1.16s/it]Calibration:  67%|██████▋   | 86/128 [01:48<00:43,  1.03s/it]Calibration:  68%|██████▊   | 87/128 [01:49<00:35,  1.14it/s]Calibration:  69%|██████▉   | 88/128 [01:50<00:33,  1.18it/s]Calibration:  70%|██████▉   | 89/128 [01:51<00:33,  1.15it/s]Calibration:  70%|███████   | 90/128 [01:51<00:27,  1.39it/s]Calibration:  71%|███████   | 91/128 [01:51<00:25,  1.47it/s]Calibration:  72%|███████▏  | 92/128 [01:52<00:22,  1.63it/s]Calibration:  73%|███████▎  | 93/128 [01:52<00:19,  1.80it/s]Calibration:  73%|███████▎  | 94/128 [01:53<00:18,  1.79it/s]Calibration:  74%|███████▍  | 95/128 [01:53<00:17,  1.93it/s]Calibration:  75%|███████▌  | 96/128 [01:54<00:16,  1.92it/s]Calibration:  76%|███████▌  | 97/128 [01:54<00:16,  1.91it/s]Calibration:  77%|███████▋  | 98/128 [01:55<00:17,  1.74it/s]Calibration:  77%|███████▋  | 99/128 [01:56<00:16,  1.73it/s]Calibration:  78%|███████▊  | 100/128 [01:56<00:17,  1.57it/s]Calibration:  79%|███████▉  | 101/128 [01:58<00:20,  1.29it/s]Calibration:  80%|███████▉  | 102/128 [01:58<00:19,  1.35it/s]Calibration:  80%|████████  | 103/128 [01:59<00:16,  1.50it/s]Calibration:  81%|████████▏ | 104/128 [02:00<00:18,  1.32it/s]Calibration:  82%|████████▏ | 105/128 [02:00<00:15,  1.51it/s]Calibration:  83%|████████▎ | 106/128 [02:00<00:12,  1.76it/s]Calibration:  84%|████████▎ | 107/128 [02:01<00:11,  1.82it/s]Calibration:  84%|████████▍ | 108/128 [02:02<00:15,  1.27it/s]Calibration:  85%|████████▌ | 109/128 [02:03<00:13,  1.39it/s]Calibration:  86%|████████▌ | 110/128 [02:04<00:12,  1.40it/s]Calibration:  87%|████████▋ | 111/128 [02:09<00:37,  2.23s/it]Calibration:  88%|████████▊ | 112/128 [02:10<00:27,  1.71s/it]Calibration:  88%|████████▊ | 113/128 [02:11<00:21,  1.42s/it]Calibration:  89%|████████▉ | 114/128 [02:11<00:16,  1.19s/it]Calibration:  90%|████████▉ | 115/128 [02:12<00:12,  1.04it/s]Calibration:  91%|█████████ | 116/128 [02:12<00:09,  1.29it/s]Calibration:  91%|█████████▏| 117/128 [02:12<00:07,  1.55it/s]Calibration:  92%|█████████▏| 118/128 [02:14<00:09,  1.07it/s]Calibration:  93%|█████████▎| 119/128 [02:15<00:08,  1.07it/s]Calibration:  94%|█████████▍| 120/128 [02:15<00:06,  1.23it/s]Calibration:  95%|█████████▍| 121/128 [02:16<00:04,  1.50it/s]Calibration:  95%|█████████▌| 122/128 [02:21<00:11,  1.91s/it]Calibration:  96%|█████████▌| 123/128 [02:21<00:07,  1.52s/it]Calibration:  97%|█████████▋| 124/128 [02:22<00:04,  1.18s/it]Calibration:  98%|█████████▊| 125/128 [02:22<00:02,  1.04it/s]Calibration:  98%|█████████▊| 126/128 [02:22<00:01,  1.24it/s]Calibration:  99%|█████████▉| 127/128 [02:23<00:00,  1.47it/s]Calibration: 100%|██████████| 128/128 [02:32<00:00,  3.16s/it]Calibration: 100%|██████████| 128/128 [02:32<00:00,  1.19s/it]
+
+=== Block Angular Distances (block size = 12) ===
+  Block [ 0, 12): avg_distance = 0.314163
+  Block [ 1, 13): avg_distance = 0.322556
+  Block [ 2, 14): avg_distance = 0.308334
+  Block [ 3, 15): avg_distance = 0.302322
+  Block [ 4, 16): avg_distance = 0.307480
+  Block [ 5, 17): avg_distance = 0.310577
+  Block [ 6, 18): avg_distance = 0.320007
+  Block [ 7, 19): avg_distance = 0.323410
+  Block [ 8, 20): avg_distance = 0.321686
+  Block [ 9, 21): avg_distance = 0.318817
+  Block [10, 22): avg_distance = 0.317627
+  Block [11, 23): avg_distance = 0.315842
+  Block [12, 24): avg_distance = 0.310318
+  Block [13, 25): avg_distance = 0.297531
+  Block [14, 26): avg_distance = 0.275314
+  Block [15, 27): avg_distance = 0.266769
+  Block [16, 28): avg_distance = 0.274307
+  Block [17, 29): avg_distance = 0.269165
+  Block [18, 30): avg_distance = 0.277100
+  Block [19, 31): avg_distance = 0.350998
+
+★ Best block to remove: layers [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+  Angular distance: 0.266769
+  Layers kept: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 27, 28, 29, 30, 31]
+
+Pruning: 32 → 20 layers
+Untying lm_head...
+Saving to granite3b-pruneme-skip12-block15to26/
+
+Final size: 4.70 GB (removed 37.5% layers)
+Log: granite3b-pruneme-skip12-block15to26/pruneme_log.json
+Done.
+
+real	4m35.797s
+user	4m12.004s
+sys	0m24.930s

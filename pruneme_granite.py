@@ -49,12 +49,12 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
 # ============== config ==============
-MODEL_ID  = "/workspace/models/granite_gcode_merged/granite_gcode_merged_best_new"
-DATA_PATH = "/workspace/training_data/dataset_no_rule/train.jsonl"
+MODEL_ID = "/home/aichen/project_data/model/granite_gcode_merged_best_new"
+DATA_PATH = "/home/aichen/project_data/training_data/dataset_no_rule/train.jsonl"
 
 NUM_CALIBRATION_SAMPLES = 128
 MAX_SEQ_LENGTH          = 65536
-LAYERS_TO_SKIP          = 10          # number of consecutive layers to remove (= block size)
+LAYERS_TO_SKIP = 12         # number of consecutive layers to remove (= block size)
                                      # Granite has 32 layers; 10 = 31.25% pruning
 SEED = 42
 

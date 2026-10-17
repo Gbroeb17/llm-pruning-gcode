@@ -14,11 +14,11 @@ from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
-MODEL_ID = "/home/aichen/project_data/model/granite_gcode_merged_best_new"
-DATA_PATH = "/home/aichen/project_data/training_data/dataset_no_rule/train.jsonl"
+MODEL_ID = "/media/ssd2/llm-pruning/shared/models/granite_gcode_merged_best_new"
+DATA_PATH = "/media/ssd2/llm-pruning/shared/datasets/training_data/dataset_no_rule/train.jsonl"
 NUM_CALIBRATION_SAMPLES = 128
 MAX_SEQ_LENGTH = 65536
-PRUNE_PER_ROUND = 6  # x: layers removed per iteration
+PRUNE_PER_ROUND = 3  # x: layers removed per iteration
 TOTAL_PRUNE_LAYERS = 12  # y: total layers removed
 MIN_LEN = 1024
 SEED = 42

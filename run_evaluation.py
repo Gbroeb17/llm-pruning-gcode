@@ -38,12 +38,12 @@ from evaluator import evaluate_all
 from overlay_dxf_gcode import run_overlay_batch
 
 
-DEFAULT_DXF_DIR = Path("/workspace/test_data/inference_input")
-DEFAULT_GCODE_DIR = Path("/workspace/llm-pruning-gcode/pruneme-skip6-qlora-ep0.25-inference-output")
-DEFAULT_PARAM_CSV = Path("/workspace/test_data/parameters_test.csv")
-DEFAULT_TIMING_CSV = Path("/workspace/llm-pruning-gcode/pruneme-skip6-qlora-ep0.25-timing.csv")
-DEFAULT_OUTPUT_DIR = Path("/workspace/llm-pruning-gcode/pruneme-skip6-qlora-ep0.25-eval")
-DEFAULT_OVERLAY_DIRNAME = "pruneme-skip6-qlora-ep0.25-overlay-png"
+DEFAULT_DXF_DIR = Path("/media/ssd2/llm-pruning/shared/datasets/test_data/inference_input")
+DEFAULT_GCODE_DIR = Path("/media/ssd2/llm-pruning/cs_115522107/llm-pruning-gcode/inference_outputs/iterative-multiblock-b3-skip12-qlora-ep0.25")
+DEFAULT_PARAM_CSV = Path("/media/ssd2/llm-pruning/shared/datasets/test_data/parameters_test.csv")
+DEFAULT_TIMING_CSV = Path("/media/ssd2/llm-pruning/cs_115522107/llm-pruning-gcode/inference_outputs/iterative-multiblock-b3-skip12-qlora-ep0.25-timing.csv")
+DEFAULT_OUTPUT_DIR = Path("/media/ssd2/llm-pruning/cs_115522107/llm-pruning-gcode/evaluation_outputs/iterative-multiblock-b3-skip12-qlora-ep0.25")
+DEFAULT_OVERLAY_DIRNAME = "iterative-multiblock-b3-skip12-qlora-ep0.25-overlay-png"
 DEFAULT_TOL_MM = 0.005
 DEFAULT_CLOSE_TOL_MM = 1e-4
 DEFAULT_FLATTEN_DISTANCE = 0.01

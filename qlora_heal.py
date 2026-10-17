@@ -42,15 +42,15 @@ from transformers import (
 
 # ============== config ==============
 # Path to pruned model produced by pruneme_granite.py
-BASE_MODEL_DIR = "/workspace/llm-pruning-gcode/granite3b-pruneme-skip6-block18to23"
+BASE_MODEL_DIR = "/media/ssd2/llm-pruning/cs_115522107/llm-pruning-gcode/experiments/iterative_pruning/outputs/granite3b-pruneme-iterative-multiblock-b3-n4-skip12"
 # Adjust to your actual block range — check the folder name you got
 
-TRAIN_JSONL = "/workspace/training_data/dataset_no_rule/train.jsonl"
-VALID_JSONL = "/workspace/training_data/dataset_no_rule/valid.jsonl" 
+TRAIN_JSONL = "/media/ssd2/llm-pruning/shared/datasets/training_data/dataset_no_rule/train.jsonl"
+VALID_JSONL = "/media/ssd2/llm-pruning/shared/datasets/training_data/dataset_no_rule/valid.jsonl" 
 #VALID_SPLIT_RATIO = 0.05   # 5% from train.jsonl as validation
 
-OUTPUT_DIR     = "/workspace/llm-pruning-gcode/qlora_runs/pruneme-skip6-qlora-ep0.25"
-MERGED_SAVE_DIR = "/workspace/llm-pruning-gcode/granite3b-pruneme-skip6-qlora-ep0.25"
+OUTPUT_DIR     = "/media/ssd2/llm-pruning/cs_115522107/llm-pruning-gcode/qlora_runs/iterative-multiblock-b3-skip12-qlora-ep0.25"
+MERGED_SAVE_DIR = "/media/ssd2/llm-pruning/cs_115522107/llm-pruning-gcode/outputs/iterative-multiblock-b3-skip12-qlora-ep0.25"
 
 # Training hyperparameters (sensible defaults, adjust as needed)
 MAX_SEQ_LENGTH      = 12288
@@ -284,8 +284,10 @@ training_args = TrainingArguments(
     output_dir=OUTPUT_DIR,
     num_train_epochs=NUM_EPOCHS,
     per_device_train_batch_size=BATCH_SIZE,
+    per_device_eval_batch_size=1, # 怕memory超過
     gradient_accumulation_steps=GRAD_ACCUM,
     gradient_checkpointing=True,
+    prediction_loss_only = True, # 避免驗證階段保留大量預測資料
     
     learning_rate=LEARNING_RATE,
     warmup_ratio=WARMUP_RATIO,

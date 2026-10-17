@@ -35,7 +35,7 @@ INFERENCE_OUTPUT_DIR = PROJECT_ROOT / "ep2_output"
 INFERENCE_PATH_JSON_DIR = INFERENCE_OUTPUT_DIR / "path_json_no_rule"
 TIMING_CSV_PATH = PROJECT_ROOT / "ep2_timing.cvs"
 
-PARAMETERS_CSV_PATH = Path("/workspace/test_data/parameters_test.csv") # 只要改這個其他vllm沒有import
+PARAMETERS_CSV_PATH = Path("/media/ssd2/llm-pruning/shared/datasets/test_data/parameters_test.csv") # 只要改這個其他vllm沒有import
 CSV_FILENAME_COL = "filename"
 CSV_LINE_DISTANCE_COL = "line_distance"
 CSV_LASER_POWER_COL = "laser_power_s"

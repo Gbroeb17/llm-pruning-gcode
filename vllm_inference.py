@@ -9,10 +9,10 @@ import time
 from pathlib import Path
 
 
-MODEL_DIR = "/workspace/llm-pruning-gcode/granite3b-pruneme-skip6-qlora-ep0.25"
-INFERENCE_INPUT_DIR = Path("/workspace/test_data/inference_input")          # 1000 筆 DXF
-INFERENCE_OUTPUT_DIR = Path("/workspace/llm-pruning-gcode/pruneme-skip6-qlora-ep0.25-inference-output")
-TIMING_CSV_PATH = Path("/workspace/llm-pruning-gcode/pruneme-skip6-qlora-ep0.25-timing.csv")
+MODEL_DIR = "/media/ssd2/llm-pruning/cs_115522107/llm-pruning-gcode/outputs/iterative-multiblock-b3-skip12-qlora-ep0.25"
+INFERENCE_INPUT_DIR = Path("/media/ssd2/llm-pruning/shared/datasets/test_data/inference_input")          # 1000 筆 DXF
+INFERENCE_OUTPUT_DIR = Path("/media/ssd2/llm-pruning/cs_115522107/llm-pruning-gcode/inference_outputs/iterative-multiblock-b3-skip12-qlora-ep0.25")
+TIMING_CSV_PATH = Path("/media/ssd2/llm-pruning/cs_115522107/llm-pruning-gcode/inference_outputs/iterative-multiblock-b3-skip12-qlora-ep0.25-timing.csv")
 
 # vLLM 引擎設定
 GPU_MEM_UTIL = 0.90
